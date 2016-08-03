@@ -1,1 +1,4 @@
-Game.cookiesEarned = 1000000000000;
+if (Game.onMenu=='prefs')
+{
+  Game.cookiesEarned = 1000000000000;
+}
