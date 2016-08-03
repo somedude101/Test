@@ -1,4 +1,4 @@
 if (Game.onMenu=='stats')
 {
-  Game.cookiesEarned = 1000000000000000000000000;
+  Game.WriteButton('fancy','fancyButton','test 1','test 2','Game.ToggleFancy();')+'<label>(visual improvements; disabling may improve performance)</label><br>'+
 }
