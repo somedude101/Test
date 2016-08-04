@@ -488,7 +488,7 @@ function FCMenu() {
     });
     buildTable.append(('<tr><td colspan="5">&nbsp;</td></tr>'));
     buildTable.append(('<tr><td colspan="5">&nbsp;</td></tr>').css('border-top', '2px dashed #999'));
-    .each({'Pledging/Appeased' : 0, 'One Mind/Awoken' : 1, 'Displeased' : 2, 'Full Wrath/Angered' : 3}, function(k,v) {
+    $.each({'Pledging/Appeased' : 0, 'One Mind/Awoken' : 1, 'Displeased' : 2, 'Full Wrath/Angered' : 3}, function(k,v) {
       buildTable.append(('<tr><td colspan="2"><b>' + k + (Game.elderWrath === v ? ' (*)' : '') + '</b></td><td colspan="2" title="Ratio of Effective CPS vs Base CPS">' + Beautify(effectiveCps(Game.cookies, v) / baseCps()) + '</td><td>' + Beautify(effectiveCps(Game.cookies, v) - effectiveCps()) + '</td></tr>'));
     });
     subsection.append(('<div>').addClass('listing').append(buildTable));
