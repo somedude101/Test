@@ -1,4 +1,2 @@
-Addon = {};
-
-Addon.something = function()
-	Game.cookiesEarned = 10000000000000000000000000;
+if(true)
+	Game.cookiesEarned = 1000000000000000000000000;
