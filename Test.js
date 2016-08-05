@@ -1,18 +1,3 @@
-Addon = {};
-
-Addon.colorTextPre = 'Text';
-Addon.colorBackPre = 'Back';
-Addon.colorBorderPre = 'Border';
-Addon.colorBlue = 'Blue';
-Addon.colorGreen = 'Green';
-Addon.colorYellow = 'Yellow';
-Addon.colorOrange = 'Orange';
-Addon.colorRed = 'Red';
-Addon.colorPurple = 'Purple';
-Addon.colorGray = 'Gray';
-Addon.colorPink = 'Pink';
-Addon.colorBrown = 'Brown';
-
 Addon.AddMenuPref = function()
 {
 	var title = function()
@@ -43,4 +28,10 @@ Addon.AddMenu = function()
 		Addon.AddMenuPref();
 	else if (Game.onMenu == 'stats')
 		Addon.AddMenuStats();
+}
+Addon.AddCCMenu = Game.UpdateMenu;
+Game.UpdateMenu = function()
+{
+	Addon.AddCCMenu();
+	Addon.AddMenu();
 }
