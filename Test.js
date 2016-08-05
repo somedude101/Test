@@ -21,53 +21,54 @@ CM.Sim = {};
 /*********
  * Cache *
  *********/
- 
+Queue = function()
+{
+	var queue  = [];
+	var offset = 0;
+	this.getLength = function()
+	{
+		return (queue.length - offset);
+	}
+	this.isEmpty = function()
+	{
+		return (queue.length == 0);
+	}
+	this.enqueue = function(item)
+	{
+		queue.push(item);
+	}
+	this.dequeue = function()
+	{
+		if (queue.length == 0)
+			return undefined;
+		var item = queue[offset];
+		if (++ offset * 2 >= queue.length)
+		{
+			queue  = queue.slice(offset);
+			offset = 0;
+		}
+		return item;
+	}
+	this.peek = function()
+	{
+		return (queue.length > 0 ? queue[offset] : undefined);
+	}
+	this.get = function(place)
+	{
+		var item = undefined;
+		if (queue.length > 0 && place < (queue.length - offset) && place >= 0)
+			item = queue[(offset + place)];
+    return item;
+	}
+}
 CM.Cache.AddQueue = function()
 {
 	CM.Cache.Queue = document.createElement('script');
 	CM.Cache.Queue.type = 'text/javascript';
-	CM.Cache.Queue.setAttribute('src', 'function Queue()
-	{
-		var queue  = [];
-		var offset = 0;
-		this.getLength = function()
-		{
-			return (queue.length - offset);
-		}
-		this.isEmpty = function()
-		{
-			return (queue.length == 0);
-		}
-		this.enqueue = function(item)
-		{
-			queue.push(item);
-		}
-		this.dequeue = function()
-		{
-			if (queue.length == 0)
-				return undefined;
-			var item = queue[offset];
-			if (++ offset * 2 >= queue.length)
-			{
-				queue  = queue.slice(offset);
-				offset = 0;
-			}
-			return item;
-		}
-		this.peek = function()
-		{
-			return (queue.length > 0 ? queue[offset] : undefined);
-		}
-		this.get = function(place)
-		{
-			var item = undefined;
-			if (queue.length > 0 && place < (queue.length - offset) && place >= 0)
-				item = queue[(offset + place)];
-			return item;
-		}
-	}');
+	CM.Cache.Queue.setAttribute('src', 'Oueue()');
 	document.head.appendChild(CM.Cache.Queue);
 }
+
 CM.Cache.NextNumber = function(base) {
 	var count = base > Math.pow(2, 53) ? Math.pow(2, Math.floor(Math.log(base) / Math.log(2)) - 53) : 1;
 	while (base == base + count) {
