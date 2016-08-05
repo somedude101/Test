@@ -21,7 +21,7 @@ Addon.Sim = {};
 /*********
  * Cache *
  *********/
-Addon.Queue = function()
+Queue = function()
 {
 	var queue  = [];
 	var offset = 0;
@@ -65,7 +65,7 @@ Addon.Cache.AddQueue = function()
 {
 	Addon.Cache.Queue = document.createElement('script');
 	Addon.Cache.Queue.type = 'text/javascript';
-	Addon.Cache.Queue.setAttribute('src', 'Addon.Queue()');
+	Addon.Cache.Queue.setAttribute('src', 'Queue()');
 	document.head.appendChild(Addon.Cache.Queue);
 }
 
