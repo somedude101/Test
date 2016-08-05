@@ -65,7 +65,7 @@ Addon.Cache.AddQueue = function()
 {
 	Addon.Cache.Queue = document.createElement('script');
 	Addon.Cache.Queue.type = 'text/javascript';
-	Addon.Cache.Queue.setAttribute('src', 'Addon.Oueue()');
+	Addon.Cache.Queue.setAttribute('src', 'Addon.Queue()');
 	document.head.appendChild(Addon.Cache.Queue);
 }
 
