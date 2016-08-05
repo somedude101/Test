@@ -1,7 +1,3 @@
-/**********
- * Header *
- **********/
-
 Addon = {};
 
 Addon.Backup = {};
