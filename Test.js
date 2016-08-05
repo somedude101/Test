@@ -1,3 +1,18 @@
+Addon = {};
+
+Addon.colorTextPre = 'Text';
+Addon.colorBackPre = 'Back';
+Addon.colorBorderPre = 'Border';
+Addon.colorBlue = 'Blue';
+Addon.colorGreen = 'Green';
+Addon.colorYellow = 'Yellow';
+Addon.colorOrange = 'Orange';
+Addon.colorRed = 'Red';
+Addon.colorPurple = 'Purple';
+Addon.colorGray = 'Gray';
+Addon.colorPink = 'Pink';
+Addon.colorBrown = 'Brown';
+
 Addon.AddMenuPref = function()
 {
 	var title = function()
