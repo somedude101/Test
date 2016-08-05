@@ -58,7 +58,7 @@ Addon.Queue = function()
 		var item = undefined;
 		if (queue.length > 0 && place < (queue.length - offset) && place >= 0)
 			item = queue[(offset + place)];
-    return item;
+		return item;
 	}
 }
 Addon.Cache.AddQueue = function()
