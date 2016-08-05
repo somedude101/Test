@@ -651,13 +651,6 @@ Addon.Disp.GetConfigDisplay = function(config) {
 	return Addon.ConfigData[config].label[Addon.Config[config]];
 }
 
-Addon.Disp.AddJscolor = function() {
-	Addon.Disp.Jscolor = document.createElement('script');
-	Addon.Disp.Jscolor.type = 'text/javascript';
-	Addon.Disp.Jscolor.setAttribute('src', 'https://rawgit.com/somedude101/Test/master/jscolor.js');
-	document.head.appendChild(Addon.Disp.Jscolor);
-}
-
 Addon.Disp.CreateCssArea = function() {
 	Addon.Disp.Css = document.createElement('style');
 	Addon.Disp.Css.type = 'text/css';
