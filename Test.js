@@ -1,7 +1,3 @@
-/**********
- * Header *
- **********/
-
 Addon = {};
 
 Addon.Backup = {};
@@ -1030,7 +1026,7 @@ Addon.Cache.AddQueue = function()
 {
 	Addon.Cache.Queue = document.createElement('script');
 	Addon.Cache.Queue.type = 'text/javascript';
-	Addon.Cache.Queue.setAttribute('src', 'Queue()');
+	Addon.Cache.Queue.setAttribute('src', Queue());
 	document.head.appendChild(Addon.Cache.Queue);
 }
 
@@ -1659,7 +1655,7 @@ Addon.Disp.GetConfigDisplay = function(config) {
 Addon.Disp.AddJscolor = function() {
 	Addon.Disp.Jscolor = document.createElement('script');
 	Addon.Disp.Jscolor.type = 'text/javascript';
-	Addon.Disp.Jscolor.setAttribute('src', 'jscolor');
+	Addon.Disp.Jscolor.setAttribute('src', jscolor);
 	document.head.appendChild(Addon.Disp.Jscolor);
 }
 
