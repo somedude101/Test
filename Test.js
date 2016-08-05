@@ -2534,8 +2534,6 @@ Addon.Init = function() {
 	}
 	if (proceed) {
 		Addon.Cache.AddQueue();
-		Addon.Disp.AddJscolor();
-		
 		var delay = setInterval(function() {
 			if (typeof Queue !== 'undefined' && typeof jscolor !== 'undefined') {
 				Addon.DelayInit();
