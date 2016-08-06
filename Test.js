@@ -1527,19 +1527,6 @@ Addon.ReplaceNative = function() {
 		Addon.Disp.UpdateTooltipLocation();
 	}
 	
-	Addon.Backup.UpdateSpecial = Game.UpdateSpecial;
-	Game.UpdateSpecial = function() {
-		if (Addon.Config.TimerBar == 1 && Addon.Config.TimerBarPos == 0) {
-			var timerBarHeight = parseInt(Addon.Disp.TimerBar.style.height);
-			Game.mouseY -= timerBarHeight;
-			Addon.Backup.UpdateSpecial();
-			Game.mouseY += timerBarHeight;
-		}
-		else {
-			Addon.Backup.UpdateSpecial();
-		}
-	}
-	
 	Addon.Backup.RebuildUpgrades = Game.RebuildUpgrades;
 	Game.RebuildUpgrades = function() {
 		Addon.Backup.RebuildUpgrades();
@@ -1628,9 +1615,6 @@ Addon.Loop = function() {
 		// Change menu refresh interval
 		Addon.Disp.RefreshMenu();
 	}
-	
-	// Check Golden Cookies
-	Addon.Disp.CheckGoldenCookie();
 	
 	// Check Season Popup
 	Addon.Disp.CheckSeasonPopup();
