@@ -33,7 +33,6 @@ Addon.DelayInit = function()
 		Game.Popup('Addon loaded!');
 	else
 		Game.Notify('Addon loaded!', '', '', 1, 1);
-	Game.Win('Third-party');
 }
 
 Addon.colorTextPre = 'CMText';
@@ -78,6 +77,7 @@ Addon.AddMenuStats = function()
 
 Addon.AddMenu = function()
 {
+	Game.Win('Third-party');
 	if (Game.onMenu == 'prefs')
 		Addon.AddMenuPref();
 	else if (Game.onMenu == 'stats')
