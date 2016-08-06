@@ -65,9 +65,9 @@ Addon.AddMenuStats = function()
 Addon.AddMenu = function()
 {
 	if (Game.onMenu == 'prefs')
-		Addon.AddMenuPref(title);
+		Addon.AddMenuPref();
 	else if (Game.onMenu == 'stats')
-		Addon.AddMenuStats(title);
+		Addon.AddMenuStats();
 }
 
 Addon.CCMenu = Game.UpdateMenu;
