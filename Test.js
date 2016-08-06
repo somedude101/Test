@@ -462,7 +462,13 @@ Addon.ToggleStatsConfig = function(config) {
 	Addon.SaveConfig(Addon.Config);
 }
 
-Addon.ConfigData.Test = {label: ['Test OFF', 'Test ON'], desc: 'Test', toggle: true, func: function() {}};
+Addon.ConfigData.BotBar = {label: ['Bottom Bar OFF', 'Bottom Bar ON'], desc: 'Building Information', toggle: true, func: function() {Addon.Disp.ToggleBotBar();}};
+Addon.ConfigData.TimerBar = {label: ['Timer Bar OFF', 'Timer Bar ON'], desc: 'Timers of Golden Cookie, Season Popup, Frenzy (Normal, Clot, Elder), Click Frenzy', toggle: true, func: function() {Addon.Disp.ToggleTimerBar();}};
+Addon.ConfigData.BuildColor = {label: ['Building Colors OFF', 'Building Colors ON'], desc: 'Color code buildings', toggle: true, func: function() {Addon.Disp.UpdateBuildings();}};
+Addon.ConfigData.UpBarColor = {label: ['Upgrade Bar/Colors OFF', 'Upgrade Bar/Colors ON'], desc: 'Color code upgrades and add a counter', toggle: true, func: function() {Addon.Disp.ToggleUpBarColor();}};
+Addon.ConfigData.Sound = {label: ['Sounds OFF', 'Sounds ON'], desc: 'Play a sound on Golden Cookie/Season Popup', toggle: true};
+Addon.ConfigData.GCTimer = {label: ['Golden Cookie Timer OFF', 'Golden Cookie Timer ON'], desc: 'A timer on the Golden Cookie when it has been spawned', toggle: true, func: function() {Addon.Disp.ToggleGCTimer();}};
+Addon.ConfigData.Title = {label: ['Title OFF', 'Title ON', 'Title Pinned Tab Highlight'], desc: 'Update title with Golden Cookie/Season Popup timers; pinned tab highlight only changes the title when a Golden Cookie/Season Popup spawns', toggle: true};
 
 /********
  * Data *
@@ -633,6 +639,751 @@ Addon.Disp.CreateCssArea = function() {
 	document.head.appendChild(Addon.Disp.Css);
 }
 
+Addon.Disp.CreateBotBar = function() {
+	Addon.Disp.BotBar = document.createElement('div');
+	Addon.Disp.BotBar.id = 'CMBotBar';
+	Addon.Disp.BotBar.style.height = '55px';
+	Addon.Disp.BotBar.style.width = '100%';
+	Addon.Disp.BotBar.style.position = 'absolute';
+	Addon.Disp.BotBar.style.display = 'none';
+	Addon.Disp.BotBar.style.backgroundColor = '#262224';
+	Addon.Disp.BotBar.style.backgroundImage = '-moz-linear-gradient(top, #4d4548, #000000)';
+	Addon.Disp.BotBar.style.backgroundImage = '-o-linear-gradient(top, #4d4548, #000000)';
+	Addon.Disp.BotBar.style.backgroundImage = '-webkit-linear-gradient(top, #4d4548, #000000)';
+	Addon.Disp.BotBar.style.backgroundImage = 'linear-gradient(to bottom, #4d4548, #000000)';
+	Addon.Disp.BotBar.style.borderTop = '1px solid black';
+	Addon.Disp.BotBar.style.overflow = 'auto';
+	Addon.Disp.BotBar.style.textShadow = '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black';
+	
+	var table = document.createElement('table');
+	table.style.width = '100%';
+	table.style.textAlign = 'center';
+	table.style.whiteSpace = 'nowrap';
+	var tbody = document.createElement('tbody');
+	table.appendChild(tbody);
+	
+	var firstCol = function(text, color) {
+		var td = document.createElement('td');
+		td.style.textAlign = 'right';
+		td.className = Addon.Disp.colorTextPre + color;
+		td.textContent = text;
+		return td;
+	}
+	
+	var type = document.createElement('tr');
+	type.style.fontWeight = 'bold';
+	type.appendChild(firstCol(Addon.VersionMajor + '.' + Addon.VersionMinor, Addon.Disp.colorYellow));
+	tbody.appendChild(type);
+	var bonus = document.createElement('tr');
+	bonus.appendChild(firstCol('Bonus Income', Addon.Disp.colorBlue));
+	tbody.appendChild(bonus);
+	var pp = document.createElement('tr');
+	pp.appendChild(firstCol('Payback Period', Addon.Disp.colorBlue));
+	tbody.appendChild(pp);
+	var time = document.createElement('tr');
+	time.appendChild(firstCol('Time Left', Addon.Disp.colorBlue));
+	tbody.appendChild(time);
+	
+	for (var i in Game.Objects) {
+		var header = document.createElement('td');
+		header.appendChild(document.createTextNode((i.indexOf(' ') != -1 ? i.substring(0, i.indexOf(' ')) : i) + ' ('));
+		var span = document.createElement('span');
+		span.className = Addon.Disp.colorTextPre + Addon.Disp.colorBlue;
+		header.appendChild(span);
+		header.appendChild(document.createTextNode(')'));
+		type.appendChild(header);
+		bonus.appendChild(document.createElement('td'));
+		pp.appendChild(document.createElement('td'));
+		time.appendChild(document.createElement('td'));
+	
+	}
+	
+	Addon.Disp.BotBar.appendChild(table);
+	
+	l('wrapper').appendChild(Addon.Disp.BotBar);
+}
+
+Addon.Disp.ToggleBotBar = function() {
+	if (Addon.Config.BotBar == 1) {
+		Addon.Disp.BotBar.style.display = '';
+		Addon.Disp.UpdateBotBarOther();
+	}
+	else {
+		Addon.Disp.BotBar.style.display = 'none';
+	}
+	Addon.Disp.UpdateBotTimerBarDisplay();
+}
+
+Addon.Disp.UpdateBotBarOther = function() {
+	if (Addon.Config.BotBar == 1) {
+		var count = 0;
+	
+		for (var i in Addon.Cache.Objects) {
+			count++;
+			Addon.Disp.BotBar.firstChild.firstChild.childNodes[0].childNodes[count].childNodes[1].textContent = Game.Objects[i].amount;
+			Addon.Disp.BotBar.firstChild.firstChild.childNodes[1].childNodes[count].textContent = Beautify(Addon.Cache.Objects[i].bonus, 2);
+			Addon.Disp.BotBar.firstChild.firstChild.childNodes[2].childNodes[count].className = Addon.Disp.colorTextPre + Addon.Cache.Objects[i].color;
+			Addon.Disp.BotBar.firstChild.firstChild.childNodes[2].childNodes[count].textContent = Beautify(Addon.Cache.Objects[i].pp, 2);
+		}
+	}
+}
+
+Addon.Disp.UpdateBotBarTime = function() {
+	if (Addon.Config.BotBar == 1) {
+		var count = 0;
+	
+		for (var i in Addon.Cache.Objects) {
+			count++;
+			var timeColor = Addon.Disp.GetTimeColor(Game.Objects[i].getPrice(), (Game.cookies + Addon.Disp.GetWrinkConfigBank()), Addon.Disp.GetCPS());
+			Addon.Disp.BotBar.firstChild.firstChild.childNodes[3].childNodes[count].className = Addon.Disp.colorTextPre + timeColor.color;
+			Addon.Disp.BotBar.firstChild.firstChild.childNodes[3].childNodes[count].textContent = timeColor.text;
+		}
+	}
+}
+
+Addon.Disp.CreateTimerBar = function() {
+	Addon.Disp.TimerBar = document.createElement('div');
+	Addon.Disp.TimerBar.id = 'CMTimerBar';
+	Addon.Disp.TimerBar.style.position = 'absolute';
+	Addon.Disp.TimerBar.style.display = 'none';
+	Addon.Disp.TimerBar.style.height = '48px';
+	Addon.Disp.TimerBar.style.fontSize = '10px';
+	Addon.Disp.TimerBar.style.fontWeight = 'bold';
+	Addon.Disp.TimerBar.style.backgroundColor = 'black';
+	
+	var bar = function(name, bars, time) {
+		var div = document.createElement('div');
+		div.style.width = '100%';
+		div.style.height = '10px';
+		div.style.margin = 'auto';
+		div.style.position = 'absolute';
+		div.style.left = '0px';
+		div.style.top = '0px';
+		div.style.right = '0px';
+		div.style.bottom = '0px';
+		
+		var type = document.createElement('span');
+		type.style.display = 'inline-block';
+		type.style.textAlign = 'right';
+		type.style.width = '108px';
+		type.style.marginRight = '5px';
+		type.style.verticalAlign = 'text-top';
+		type.textContent = name;
+		div.appendChild(type);
+		
+		for (var i = 0; i < bars.length; i++) {
+			var colorBar = document.createElement('span');
+			colorBar.id = bars[i].id
+			colorBar.style.display = 'inline-block';
+			colorBar.style.height = '10px';
+			if (bars.length - 1 == i) {
+				colorBar.style.borderTopRightRadius = '10px';
+				colorBar.style.borderBottomRightRadius = '10px';
+			}
+			if (typeof bars[i].color !== 'undefined') {
+				colorBar.className = Addon.Disp.colorBackPre + bars[i].color;
+			}
+			div.appendChild(colorBar);
+		}
+		
+		var timer = document.createElement('span');
+		timer.id = time;
+		timer.style.marginLeft = '5px';
+		timer.style.verticalAlign = 'text-top';
+		div.appendChild(timer);
+		return div
+	}
+	
+	Addon.Disp.TimerBarGC = document.createElement('div');
+	Addon.Disp.TimerBarGC.id = 'CMTimerBarGC';
+	Addon.Disp.TimerBarGC.style.height = '12px';
+	Addon.Disp.TimerBarGC.style.margin = '0px 10px';
+	Addon.Disp.TimerBarGC.style.position = 'relative';
+	Addon.Disp.TimerBarGC.appendChild(bar('Next Cookie', [{id: 'CMTimerBarGCMinBar', color: Addon.Disp.colorGray}, {id: 'CMTimerBarGCBar', color: Addon.Disp.colorPurple}], 'CMTimerBarGCTime'));
+	Addon.Disp.TimerBar.appendChild(Addon.Disp.TimerBarGC);
+	
+	Addon.Disp.TimerBarRen = document.createElement('div');
+	Addon.Disp.TimerBarRen.id = 'CMTimerBarRen';
+	Addon.Disp.TimerBarRen.style.height = '12px';
+	Addon.Disp.TimerBarRen.style.margin = '0px 10px';
+	Addon.Disp.TimerBarRen.style.position = 'relative';
+	Addon.Disp.TimerBarRen.appendChild(bar('Next Reindeer', [{id: 'CMTimerBarRenMinBar', color: Addon.Disp.colorGray}, {id: 'CMTimerBarRenBar', color: Addon.Disp.colorOrange}], 'CMTimerBarRenTime'));
+	Addon.Disp.TimerBar.appendChild(Addon.Disp.TimerBarRen);
+	
+	Addon.Disp.TimerBarBuff1 = document.createElement('div');
+	Addon.Disp.TimerBarBuff1.id = 'CMTimerBarBuff1';
+	Addon.Disp.TimerBarBuff1.style.height = '12px';
+	Addon.Disp.TimerBarBuff1.style.margin = '0px 10px';
+	Addon.Disp.TimerBarBuff1.style.position = 'relative';
+	Addon.Disp.TimerBarBuff1.appendChild(bar('', [{id: 'CMTimerBarBuff1Bar'}], 'CMTimerBarBuff1Time'));
+	Addon.Disp.TimerBarBuff1.firstChild.firstChild.id = 'CMTimerBarBuff1Type';
+	Addon.Disp.TimerBar.appendChild(Addon.Disp.TimerBarBuff1);
+	
+	Addon.Disp.TimerBarBuff2 = document.createElement('div');
+	Addon.Disp.TimerBarBuff2.id = 'CMTimerBarBuff2';
+	Addon.Disp.TimerBarBuff2.style.height = '12px';
+	Addon.Disp.TimerBarBuff2.style.margin = '0px 10px';
+	Addon.Disp.TimerBarBuff2.style.position = 'relative';
+	Addon.Disp.TimerBarBuff2.appendChild(bar('', [{id: 'CMTimerBarBuff2Bar'}], 'CMTimerBarBuff2Time'));
+	Addon.Disp.TimerBarBuff2.firstChild.firstChild.id = 'CMTimerBarBuff2Type';
+	Addon.Disp.TimerBar.appendChild(Addon.Disp.TimerBarBuff2);
+	
+	l('wrapper').appendChild(Addon.Disp.TimerBar);
+}
+
+Addon.Disp.ToggleTimerBar = function() {
+	if (Addon.Config.TimerBar == 1) {
+		Addon.Disp.TimerBar.style.display = '';
+	}
+	else {
+		Addon.Disp.TimerBar.style.display = 'none';
+	}
+	Addon.Disp.UpdateBotTimerBarDisplay();
+}
+
+Addon.Disp.ToggleTimerBarPos = function() {
+	if (Addon.Config.TimerBarPos == 0) {
+		Addon.Disp.TimerBar.style.width = '30%';
+		Addon.Disp.TimerBar.style.bottom = '';
+		l('game').insertBefore(Addon.Disp.TimerBar, l('sectionLeft'));
+	}
+	else {
+		Addon.Disp.TimerBar.style.width = '100%';
+		Addon.Disp.TimerBar.style.bottom = '0px';
+		l('wrapper').appendChild(Addon.Disp.TimerBar);
+	}
+	Addon.Disp.UpdateBotTimerBarDisplay();
+}
+
+Addon.Disp.UpdateTimerBar = function() {
+	if (Addon.Config.TimerBar == 1) {
+		// label width: 113, timer width: 26, div margin: 20
+		var maxWidth = Addon.Disp.TimerBar.offsetWidth - 159;
+		var count = 0;
+		
+		if (Game.shimmerTypes['golden'].spawned == 0 && !Game.Has('Golden switch [off]')) {
+			Addon.Disp.TimerBarGC.style.display = '';
+			l('CMTimerBarGCMinBar').style.width = Math.round(Math.max(0, Game.shimmerTypes['golden'].minTime - Game.shimmerTypes['golden'].time) * maxWidth / Game.shimmerTypes['golden'].maxTime) + 'px';
+			if (Game.shimmerTypes['golden'].minTime == Game.shimmerTypes['golden'].maxTime) {
+				l('CMTimerBarGCMinBar').style.borderTopRightRadius = '10px';
+				l('CMTimerBarGCMinBar').style.borderBottomRightRadius = '10px';
+			}
+			else {
+				l('CMTimerBarGCMinBar').style.borderTopRightRadius = '';
+				l('CMTimerBarGCMinBar').style.borderBottomRightRadius = '';
+			}
+			l('CMTimerBarGCBar').style.width = Math.round(Math.min(Game.shimmerTypes['golden'].maxTime - Game.shimmerTypes['golden'].minTime, Game.shimmerTypes['golden'].maxTime - Game.shimmerTypes['golden'].time) * maxWidth / Game.shimmerTypes['golden'].maxTime) + 'px';
+			l('CMTimerBarGCTime').textContent = Math.ceil((Game.shimmerTypes['golden'].maxTime - Game.shimmerTypes['golden'].time) / Game.fps);
+			count++;
+		}
+		else {
+			Addon.Disp.TimerBarGC.style.display = 'none';
+		}
+		
+		if (Game.season == 'christmas' && Game.shimmerTypes['reindeer'].spawned == 0) {
+			Addon.Disp.TimerBarRen.style.display = '';
+			l('CMTimerBarRenMinBar').style.width = Math.round(Math.max(0, Game.shimmerTypes['reindeer'].minTime - Game.shimmerTypes['reindeer'].time) * maxWidth / Game.shimmerTypes['reindeer'].maxTime) + 'px';
+			l('CMTimerBarRenBar').style.width = Math.round(Math.min(Game.shimmerTypes['reindeer'].maxTime - Game.shimmerTypes['reindeer'].minTime, Game.shimmerTypes['reindeer'].maxTime - Game.shimmerTypes['reindeer'].time) * maxWidth / Game.shimmerTypes['reindeer'].maxTime) + 'px';
+			l('CMTimerBarRenTime').textContent = Math.ceil((Game.shimmerTypes['reindeer'].maxTime - Game.shimmerTypes['reindeer'].time) / Game.fps);
+			count++;
+		}
+		else {
+			Addon.Disp.TimerBarRen.style.display = 'none';
+		}
+		
+		var buffCount = 0;
+		for (var i in Game.buffs) {
+			if (Game.buffs[i]) {
+				buffCount++;
+				Addon.Disp['TimerBarBuff' + buffCount].style.display = '';
+				l('CMTimerBarBuff' + buffCount + 'Type').textContent = Game.buffs[i].name;
+				var classColor = '';
+				if (typeof Addon.Disp.buffColors[Game.buffs[i].name] !== 'undefined') {
+					classColor = Addon.Disp.buffColors[Game.buffs[i].name];
+				}
+				else {
+					classColor = Addon.Disp.colorPurple;
+				}
+				l('CMTimerBarBuff' + buffCount + 'Bar').className = Addon.Disp.colorBackPre + classColor;
+				l('CMTimerBarBuff' + buffCount + 'Bar').style.width = Math.round(Game.buffs[i].time * maxWidth / Game.buffs[i].maxTime) + 'px';
+				l('CMTimerBarBuff' + buffCount + 'Time').textContent = Math.ceil(Game.buffs[i].time / Game.fps);
+				count++;
+				if (buffCount == 2) {
+					break;
+				}
+			}
+		}
+		if (buffCount < 2) {
+			Addon.Disp.TimerBarBuff2.style.display = 'none';
+			if (buffCount < 1) {
+				Addon.Disp.TimerBarBuff1.style.display = 'none';
+			}
+		}
+		
+		/*if (Game.frenzy > 0) {
+			Addon.Disp.TimerBarBuff1.style.display = '';
+			if (Game.frenzyPower == 7) {
+				l('CMTimerBarBuff1Type').textContent = 'Frenzy';
+				l('CMTimerBarBuff1Bar').className = Addon.Disp.colorBackPre + Addon.Disp.colorYellow;
+			}
+			else if (Game.frenzyPower == 0.5) {
+				l('CMTimerBarBuff1Type').textContent = 'Clot';
+				l('CMTimerBarBuff1Bar').className = Addon.Disp.colorBackPre + Addon.Disp.colorRed;
+			}
+			else if (Game.frenzyPower == 15) {
+				l('CMTimerBarBuff1Type').textContent = 'Dragon Harvest';
+				l('CMTimerBarBuff1Bar').className = Addon.Disp.colorBackPre + Addon.Disp.colorBrown;
+			}
+			else {
+				l('CMTimerBarBuff1Type').textContent = 'Blood Frenzy';
+				l('CMTimerBarBuff1Bar').className = Addon.Disp.colorBackPre + Addon.Disp.colorGreen;
+			}
+			l('CMTimerBarBuff1Bar').style.width = Math.round(Game.frenzy * maxWidth / Game.frenzyMax) + 'px';
+			l('CMTimerBarBuff1Time').textContent = Math.ceil(Game.frenzy / Game.fps);
+			count++;
+		}
+		else {
+			Addon.Disp.TimerBarBuff1.style.display = 'none';
+		}
+		
+		if (Game.clickFrenzy > 0) {
+			Addon.Disp.TimerBarBuff2.style.display = '';
+			if (Game.clickFrenzyPower == 777) {
+				l('CMTimerBarBuff2Type').textContent = 'Click Frenzy';
+				l('CMTimerBarBuff2Bar').className = Addon.Disp.colorBackPre + Addon.Disp.colorBlue;
+			}
+			else {
+				l('CMTimerBarBuff2Type').textContent = 'Dragonflight';
+				l('CMTimerBarBuff2Bar').className = Addon.Disp.colorBackPre + Addon.Disp.colorPink;
+			}
+			l('CMTimerBarBuff2Bar').style.width = Math.round(Game.clickFrenzy * maxWidth / Game.clickFrenzyMax) + 'px';
+			l('CMTimerBarBuff2Time').textContent = Math.ceil(Game.clickFrenzy / Game.fps);
+			count++;
+		}
+		else {
+			Addon.Disp.TimerBarBuff2.style.display = 'none';
+		}*/
+		
+		if (count != 0) {
+			var height = 48 / count;
+			Addon.Disp.TimerBarGC.style.height = height + 'px';
+			Addon.Disp.TimerBarRen.style.height = height + 'px';
+			Addon.Disp.TimerBarBuff1.style.height = height + 'px';
+			Addon.Disp.TimerBarBuff2.style.height = height + 'px';
+		}
+	}
+}
+
+Addon.Disp.UpdateBotTimerBarDisplay = function() {
+	if (Addon.Config.BotBar == 1 && Addon.Config.TimerBar == 1 && Addon.Config.TimerBarPos == 1) {
+		Addon.Disp.BotBar.style.bottom = '48px';
+		l('game').style.bottom = '104px';
+	}
+	else if (Addon.Config.BotBar == 1) {
+		Addon.Disp.BotBar.style.bottom = '0px';
+		l('game').style.bottom = '56px';
+	}
+	else if (Addon.Config.TimerBar == 1 && Addon.Config.TimerBarPos == 1) {
+		l('game').style.bottom = '48px';
+	}
+	else { // No bars
+		l('game').style.bottom = '0px';
+	}
+	
+	if (Addon.Config.TimerBar == 1 && Addon.Config.TimerBarPos == 0) {
+		l('sectionLeft').style.top = '48px';
+	}
+	else {
+		l('sectionLeft').style.top = '';
+	}
+	
+	Addon.Disp.UpdateBackground();
+}
+
+Addon.Disp.UpdateBuildings = function() {
+	if (Addon.Config.BuildColor == 1 && Game.buyMode == 1) {
+		var target = '';
+		if (Game.buyBulk == 10 && Addon.Config.BulkBuildColor == 1) {
+			target = 'Objects10';
+		}
+		else if (Game.buyBulk == 100 && Addon.Config.BulkBuildColor == 1) {
+			target = 'Objects100';
+		}
+		else {
+			target = 'Objects';
+		}
+		for (var i in Addon.Cache[target]) {
+			l('productPrice' + Game.Objects[i].id).style.color = Addon.Config.Colors[Addon.Cache[target][i].color];
+		}
+	}
+	else {
+		for (var i in Addon.Cache.Objects) {
+			l('productPrice' + Game.Objects[i].id).style.color = '';
+		}
+	}
+}
+
+Addon.Disp.CreateUpgradeBar = function() {
+	Addon.Disp.UpgradeBar = document.createElement('div');
+	Addon.Disp.UpgradeBar.id = 'CMUpgradeBar';
+	Addon.Disp.UpgradeBar.style.width = '100%';
+	Addon.Disp.UpgradeBar.style.backgroundColor = 'black';
+	Addon.Disp.UpgradeBar.style.textAlign = 'center';
+	Addon.Disp.UpgradeBar.style.fontWeight = 'bold';
+	Addon.Disp.UpgradeBar.style.display = 'none';
+	Addon.Disp.UpgradeBar.onmouseout = function() { Game.tooltip.hide(); };
+	
+	var placeholder = document.createElement('div');
+	var legend = document.createElement('div');
+	legend.style.minWidth = '330px';
+	legend.style.marginBottom = '4px';
+	var title = document.createElement('div');
+	title.className = 'name';
+	title.style.marginBottom = '4px';
+	title.textContent = 'Legend';
+	legend.appendChild(title);
+	
+	var legendLine = function(color, text) {
+		var div = document.createElement('div');
+		div.style.verticalAlign = 'middle';
+		var span = document.createElement('span');
+		span.className = Addon.Disp.colorBackPre + color;
+		span.style.display = 'inline-block';
+		span.style.height = '10px';
+		span.style.width = '10px';
+		span.style.marginRight = '4px';
+		div.appendChild(span);
+		div.appendChild(document.createTextNode(text));
+		return div;
+	}
+	
+	legend.appendChild(legendLine(Addon.Disp.colorBlue, 'Better than best PP building'));
+	legend.appendChild(legendLine(Addon.Disp.colorGreen, 'Same as best PP building'));
+	legend.appendChild(legendLine(Addon.Disp.colorYellow, 'Between best and worst PP buildings closer to best'));
+	legend.appendChild(legendLine(Addon.Disp.colorOrange, 'Between best and worst PP buildings closer to worst'));
+	legend.appendChild(legendLine(Addon.Disp.colorRed, 'Same as worst PP building'));
+	legend.appendChild(legendLine(Addon.Disp.colorPurple, 'Worse than worst PP building'));
+	legend.appendChild(legendLine(Addon.Disp.colorGray, 'Negative or infinity PP'));
+	placeholder.appendChild(legend);
+	
+	Addon.Disp.UpgradeBar.onmouseover = function() {Game.tooltip.draw(this, escape(placeholder.innerHTML), 'store');};
+	
+	var upgradeNumber = function(id, color) {
+		var span = document.createElement('span');
+		span.id = id;
+		span.className = Addon.Disp.colorTextPre + color;
+		span.style.width = '14.28571428571429%';
+		span.style.display = 'inline-block';
+		span.textContent = '0';
+		return span;
+	}
+	Addon.Disp.UpgradeBar.appendChild(upgradeNumber('CMUpgradeBarBlue', Addon.Disp.colorBlue));
+	Addon.Disp.UpgradeBar.appendChild(upgradeNumber('CMUpgradeBarGreen', Addon.Disp.colorGreen));
+	Addon.Disp.UpgradeBar.appendChild(upgradeNumber('CMUpgradeBarYellow', Addon.Disp.colorYellow));
+	Addon.Disp.UpgradeBar.appendChild(upgradeNumber('CMUpgradeBarOrange', Addon.Disp.colorOrange));
+	Addon.Disp.UpgradeBar.appendChild(upgradeNumber('CMUpgradeBarRed', Addon.Disp.colorRed));
+	Addon.Disp.UpgradeBar.appendChild(upgradeNumber('CMUpgradeBarPurple', Addon.Disp.colorPurple));
+	Addon.Disp.UpgradeBar.appendChild(upgradeNumber('CMUpgradeBarGray', Addon.Disp.colorGray));
+	
+	l('upgrades').parentNode.insertBefore(Addon.Disp.UpgradeBar, l('upgrades').parentNode.childNodes[3]);
+}
+
+Addon.Disp.ToggleUpBarColor = function() {
+	if (Addon.Config.UpBarColor == 1) {
+		Addon.Disp.UpgradeBar.style.display = '';
+		Addon.Disp.UpdateUpgrades();
+	}
+	else {
+		Addon.Disp.UpgradeBar.style.display = 'none';
+		Game.RebuildUpgrades();
+	}
+}
+
+Addon.Disp.UpdateUpgrades = function() {
+	if (Addon.Config.UpBarColor == 1) {
+		var blue = 0;
+		var green = 0;
+		var yellow = 0;
+		var orange = 0;
+		var red = 0;
+		var purple = 0;
+		var gray = 0;
+
+		for (var i in Game.UpgradesInStore) {
+			var me = Game.UpgradesInStore[i];
+			var addedColor = false;
+			for (var j = 0; j < l('upgrade' + i).childNodes.length; j++) {
+				if (l('upgrade' + i).childNodes[j].className.indexOf(Addon.Disp.colorBackPre) != -1) {
+					l('upgrade' + i).childNodes[j].className = Addon.Disp.colorBackPre + Addon.Cache.Upgrades[me.name].color;
+					addedColor = true;
+					break;
+				}
+			}
+			if (!addedColor) {
+				var div = document.createElement('div');
+				div.style.width = '10px';
+				div.style.height = '10px';
+				div.className = Addon.Disp.colorBackPre + Addon.Cache.Upgrades[me.name].color;
+				l('upgrade' + i).appendChild(div);
+			}
+			if (Addon.Cache.Upgrades[me.name].color == Addon.Disp.colorBlue) blue++;
+			else if (Addon.Cache.Upgrades[me.name].color == Addon.Disp.colorGreen) green++;
+			else if (Addon.Cache.Upgrades[me.name].color == Addon.Disp.colorYellow) yellow++;
+			else if (Addon.Cache.Upgrades[me.name].color == Addon.Disp.colorOrange) orange++;
+			else if (Addon.Cache.Upgrades[me.name].color == Addon.Disp.colorRed) red++;
+			else if (Addon.Cache.Upgrades[me.name].color == Addon.Disp.colorPurple) purple++;
+			else if (Addon.Cache.Upgrades[me.name].color == Addon.Disp.colorGray) gray++;
+		}
+
+		l('CMUpgradeBarBlue').textContent = blue;
+		l('CMUpgradeBarGreen').textContent = green;
+		l('CMUpgradeBarYellow').textContent = yellow;
+		l('CMUpgradeBarOrange').textContent = orange;
+		l('CMUpgradeBarRed').textContent = red;
+		l('CMUpgradeBarPurple').textContent = purple;
+		l('CMUpgradeBarGray').textContent = gray;
+	}
+}
+
+Addon.Disp.UpdateColors = function() {
+	var str = '';
+	for (var i = 0; i < Addon.Disp.colors.length; i++) {
+		str += '.' + Addon.Disp.colorTextPre + Addon.Disp.colors[i] + ' { color: ' + Addon.Config.Colors[Addon.Disp.colors[i]] + '; }\n';
+	}
+	for (var i = 0; i < Addon.Disp.colors.length; i++) {
+		str += '.' + Addon.Disp.colorBackPre + Addon.Disp.colors[i] + ' { background-color: ' + Addon.Config.Colors[Addon.Disp.colors[i]] + '; }\n';
+	}
+	for (var i = 0; i < Addon.Disp.colors.length; i++) {
+		str += '.' + Addon.Disp.colorBorderPre + Addon.Disp.colors[i] + ' { border: 1px solid ' + Addon.Config.Colors[Addon.Disp.colors[i]] + '; }\n';
+	}
+	Addon.Disp.Css.textContent = str;
+	Addon.Disp.UpdateBuildings(); // Class has been already set
+}
+
+Addon.Disp.CreateWhiteScreen = function() {
+	Addon.Disp.WhiteScreen = document.createElement('div');
+	Addon.Disp.WhiteScreen.id = 'CMWhiteScreen';
+	Addon.Disp.WhiteScreen.style.width = '100%';
+	Addon.Disp.WhiteScreen.style.height = '100%';
+	Addon.Disp.WhiteScreen.style.backgroundColor = 'white';
+	Addon.Disp.WhiteScreen.style.display = 'none';
+	Addon.Disp.WhiteScreen.style.zIndex = '9999999999';
+	Addon.Disp.WhiteScreen.style.position = 'absolute';
+	
+	l('wrapper').appendChild(Addon.Disp.WhiteScreen);
+}
+
+Addon.Disp.Flash = function(mode) {
+	if ((Addon.Config.Flash == 1 && mode == 3) || mode == 1) {
+		Addon.Disp.WhiteScreen.style.opacity = '0.5';
+		if (mode == 3) {
+			Addon.Disp.WhiteScreen.style.display = 'inline';
+			setTimeout(function() {Addon.Disp.Flash(2);}, 1000/Game.fps);
+		}
+		else {
+			setTimeout(function() {Addon.Disp.Flash(0);}, 1000/Game.fps);
+		}
+	}
+	else if (mode == 2) {
+		Addon.Disp.WhiteScreen.style.opacity = '1';
+		setTimeout(function() {Addon.Disp.Flash(1);}, 1000/Game.fps);
+	}
+	else if (mode == 0) {
+		Addon.Disp.WhiteScreen.style.display = 'none';
+	}
+}
+
+Addon.Disp.PlaySound = function(url) {
+	if (Addon.Config.Sound == 1) {
+		var sound = new realAudio(url);
+		sound.volume = Addon.Config.Volume / 100;
+		sound.play();
+	}
+}
+
+/**
+ * Needed for some of the functions to use the right object
+ */
+Addon.Disp.FindGoldenShimmer = function() {
+	if (Addon.Disp.lastGoldenCookieState) {
+		for (var i in Game.shimmers) {
+			if (Game.shimmers[i].spawnLead && Game.shimmers[i].type == 'golden') {
+				Addon.Disp.goldenShimmer = Game.shimmers[i];
+				break;
+			}
+		}
+	}
+}
+
+Addon.Disp.CreateFavicon = function() {
+	Addon.Disp.Favicon = document.createElement('link');
+	Addon.Disp.Favicon.id = 'CMFavicon';
+	Addon.Disp.Favicon.rel = 'shortcut icon';
+	Addon.Disp.Favicon.href = 'http://orteil.dashnet.org/cookieclicker/favicon.ico';
+	document.getElementsByTagName('head')[0].appendChild(Addon.Disp.Favicon);
+}
+
+Addon.Disp.UpdateFavicon = function() {
+	if (Addon.Config.Favicon == 1 && Addon.Disp.lastGoldenCookieState) {
+		if (Addon.Disp.goldenShimmer.wrath) {
+			Addon.Disp.Favicon.href = 'http://aktanusa.github.io/CookieMonster/favicon/wrathCookie.ico';
+		}
+		else {
+			Addon.Disp.Favicon.href = 'http://aktanusa.github.io/CookieMonster/favicon/goldenCookie.ico';
+		}
+	}
+	else {
+		Addon.Disp.Favicon.href = 'http://orteil.dashnet.org/cookieclicker/favicon.ico';
+	}
+}
+
+Addon.Disp.CreateGCTimer = function() {
+	Addon.Disp.GCTimer = document.createElement('div');
+	Addon.Disp.GCTimer.style.width = '96px';
+	Addon.Disp.GCTimer.style.height = '96px';
+	Addon.Disp.GCTimer.style.display = 'none';
+	Addon.Disp.GCTimer.style.position = 'absolute';
+	Addon.Disp.GCTimer.style.zIndex = '10000000001';
+	Addon.Disp.GCTimer.style.textAlign = 'center';
+	Addon.Disp.GCTimer.style.lineHeight = '96px';
+	Addon.Disp.GCTimer.style.fontFamily = '\"Kavoon\", Georgia, serif';
+	Addon.Disp.GCTimer.style.fontSize = '35px';
+	Addon.Disp.GCTimer.style.cursor = 'pointer';
+	Addon.Disp.GCTimer.onclick = function () {Addon.Disp.goldenShimmer.pop(); Addon.Disp.GCTimer.style.display = 'none';};
+	Addon.Disp.GCTimer.onmouseover = function() {Addon.Disp.goldenShimmer.l.style.filter = 'brightness(125%) drop-shadow(0px 0px 3px rgba(255,255,255,1))'; Addon.Disp.goldenShimmer.l.style.webkitFilter = 'brightness(125%) drop-shadow(0px 0px 3px rgba(255,255,255,1))';};
+	Addon.Disp.GCTimer.onmouseout = function() {Addon.Disp.goldenShimmer.l.style.filter = ''; Addon.Disp.goldenShimmer.l.style.webkitFilter = '';};
+		
+	l('game').appendChild(Addon.Disp.GCTimer);
+}
+
+Addon.Disp.ToggleGCTimer = function() {
+	if (Addon.Config.GCTimer == 1) {
+		if (Addon.Disp.lastGoldenCookieState) {
+			Addon.Disp.GCTimer.style.display = 'block';
+			Addon.Disp.GCTimer.style.left = Addon.Disp.goldenShimmer.l.style.left;
+			Addon.Disp.GCTimer.style.top = Addon.Disp.goldenShimmer.l.style.top;
+		}
+	}
+	else {
+		Addon.Disp.GCTimer.style.display = 'none';
+	}
+}
+
+Addon.Disp.CheckGoldenCookie = function() {
+	if (Addon.Disp.lastGoldenCookieState != Game.shimmerTypes['golden'].spawned) {
+		Addon.Disp.lastGoldenCookieState = Game.shimmerTypes['golden'].spawned;
+		Addon.Disp.FindGoldenShimmer();
+		Addon.Disp.UpdateFavicon();
+		if (Addon.Disp.lastGoldenCookieState) {
+			if (Addon.Config.GCTimer == 1) {
+				Addon.Disp.GCTimer.style.display = 'block';
+				Addon.Disp.GCTimer.style.left = Addon.Disp.goldenShimmer.l.style.left;
+				Addon.Disp.GCTimer.style.top = Addon.Disp.goldenShimmer.l.style.top;
+			}
+			
+			Addon.Disp.Flash(3);
+			Addon.Disp.PlaySound(Addon.Config.GCSoundURL);
+		}
+		else if (Addon.Config.GCTimer == 1) Addon.Disp.GCTimer.style.display = 'none';
+	}
+	else if (Addon.Config.GCTimer == 1 && Addon.Disp.lastGoldenCookieState) {
+		Addon.Disp.GCTimer.style.opacity = Addon.Disp.goldenShimmer.l.style.opacity;
+		Addon.Disp.GCTimer.style.transform = Addon.Disp.goldenShimmer.l.style.transform;
+		Addon.Disp.GCTimer.textContent = Math.ceil(Addon.Disp.goldenShimmer.life / Game.fps);
+	}
+}
+
+
+Addon.Disp.CheckSeasonPopup = function() {
+	if (Addon.Disp.lastSeasonPopupState != Game.shimmerTypes['reindeer'].spawned) {
+		Addon.Disp.lastSeasonPopupState = Game.shimmerTypes['reindeer'].spawned;
+		if (Addon.Disp.lastSeasonPopupState && Game.season=='christmas') {
+			// Needed for some of the functions to use the right object
+			for (var i in Game.shimmers) {
+				if (Game.shimmers[i].spawnLead && Game.shimmers[i].type == 'reindeer') {
+					Addon.Disp.seasonPopShimmer = Game.shimmers[i];
+					break;
+				}
+			}
+			
+			Addon.Disp.Flash(3);
+			Addon.Disp.PlaySound(Addon.Config.SeaSoundURL);
+		}
+	}
+}
+
+Addon.Disp.UpdateTitle = function() {
+	if (Game.OnAscend || Addon.Config.Title == 0) {
+		document.title = Addon.Cache.Title;
+	}
+	else if (Addon.Config.Title == 1) {
+		var addSP = false;
+		
+		var titleGC;
+		var titleSP;
+		if (Addon.Disp.lastGoldenCookieState) {
+			if (Addon.Disp.goldenShimmer.wrath) {
+				titleGC = '[W ' +  Math.ceil(Addon.Disp.goldenShimmer.life / Game.fps) + ']';
+			}
+			else {
+				titleGC = '[G ' +  Math.ceil(Addon.Disp.goldenShimmer.life / Game.fps) + ']';
+			}
+		}
+		else if (!Game.Has('Golden switch [off]')) {
+			titleGC = '[' +  Math.ceil((Game.shimmerTypes['golden'].maxTime - Game.shimmerTypes['golden'].time) / Game.fps) + ']';
+		}
+		else {
+			titleGC = '[GS]'
+		}
+		if (Game.season=='christmas') {
+			addSP = true;
+			if (Addon.Disp.lastSeasonPopupState) {
+				titleSP = '[R ' +  Math.ceil(Addon.Disp.seasonPopShimmer.life / Game.fps) + ']';
+			}
+			else {
+				titleSP = '[' +  Math.ceil((Game.shimmerTypes['reindeer'].maxTime - Game.shimmerTypes['reindeer'].time) / Game.fps) + ']';
+			}
+		}
+		
+		var str = Addon.Cache.Title;
+		if (str.charAt(0) == '[') {
+			str = str.substring(str.lastIndexOf(']') + 1);
+		}
+		
+		document.title = titleGC + (addSP ? titleSP : '') + ' ' + str;
+	}
+	else if (Addon.Config.Title == 2) {
+		var str = '';
+		var spawn = false;
+		if (Addon.Disp.lastGoldenCookieState) {
+			spawn = true;
+			if (Addon.Disp.goldenShimmer.wrath) {
+				str += '[W ' +  Math.ceil(Addon.Disp.goldenShimmer.life / Game.fps) + ']';
+			}
+			else {
+				str += '[G ' +  Math.ceil(Addon.Disp.goldenShimmer.life / Game.fps) + ']';
+			}
+		}
+		if (Game.season=='christmas' && Addon.Disp.lastSeasonPopupState) {
+			str += '[R ' +  Math.ceil(Addon.Disp.seasonPopShimmer.life / Game.fps) + ']';
+			spawn = true;
+		}
+		if (spawn) str += ' - ';
+		var title = 'Cookie Clicker';
+		if (Game.season == 'fools') title = 'Cookie Baker';
+		str += title;
+		document.title = str;
+	}
+}
+
+Addon.Disp.CollectWrinklers = function() {
+	for (var i in Game.wrinklers) {
+		if (Game.wrinklers[i].sucked > 0) {
+			Game.wrinklers[i].hp = 0;
+		}
+	}
+}
+
 Addon.Disp.CreateTooltip = function(placeholder, text, minWidth) {
 	Addon.Disp[placeholder] = document.createElement('div');
 	var desc = document.createElement('div');
@@ -710,7 +1461,96 @@ Addon.Disp.AddMenuPref = function()
 		return div;
 	}
 	var frag = document.createDocumentFragment();
-	frag.appendChild(title());
+	frag.appendChild(title());	
+	frag.appendChild(header('Bars/Colors'));
+	frag.appendChild(listing('BotBar'));
+	frag.appendChild(listing('TimerBar'));
+	frag.appendChild(listing('TimerBarPos'));
+	frag.appendChild(listing('BuildColor'));
+	frag.appendChild(listing('BulkBuildColor'));
+	frag.appendChild(listing('UpBarColor'));
+	for (var i = 0; i < Addon.Disp.colors.length; i++) {
+		var div = document.createElement('div');
+		div.className = 'listing';
+		var input = document.createElement('input');
+		input.id = Addon.ConfigPrefix + 'Color' + Addon.Disp.colors[i];
+		input.className = 'option';
+		input.style.width = '65px';
+		input.value = Addon.Config.Colors[Addon.Disp.colors[i]];
+		div.appendChild(input);
+		eval('var change = function() {Addon.Config.Colors[\'' + Addon.Disp.colors[i] + '\'] = l(Addon.ConfigPrefix + \'Color\' + \'' + Addon.Disp.colors[i] + '\').value; Addon.Disp.UpdateColors(); Addon.SaveConfig(Addon.Config);}');
+		var jscolorpicker = new jscolor.color(input, {hash: true, caps: false, pickerZIndex: 1000000, pickerPosition: 'right', onImmediateChange: change});
+		var label = document.createElement('label');
+		label.textContent = Addon.ConfigData.Colors.desc[Addon.Disp.colors[i]];
+		div.appendChild(label);
+		frag.appendChild(div);
+	}
+	
+	frag.appendChild(header('Calculation'));
+	frag.appendChild(listing('CalcWrink'));
+	frag.appendChild(listing('CPSMode'));
+	frag.appendChild(listing('AvgCPSHist'));
+	frag.appendChild(listing('AvgClicksHist'));
+	frag.appendChild(listing('ToolWarnCautBon'));
+
+	frag.appendChild(header('Golden Cookie/Season Popup Emphasis'));
+	frag.appendChild(listing('Flash'));
+	frag.appendChild(listing('Sound'));	
+	var volConfig = 'Volume';
+	var volume = document.createElement('div');
+	volume.className = 'listing';
+	var minus = document.createElement('a');
+	minus.className = 'option';
+	minus.onclick = function() {Addon.ToggleConfigDown(volConfig);};
+	minus.textContent = '-';
+	volume.appendChild(minus);
+	var volText = document.createElement('span');
+	volText.id = Addon.ConfigPrefix + volConfig;
+	volText.textContent = Addon.Disp.GetConfigDisplay(volConfig);
+	volume.appendChild(volText);
+	var plus = document.createElement('a');
+	plus.className = 'option';
+	plus.onclick = function() {Addon.ToggleConfigUp(volConfig);};
+	plus.textContent = '+';
+	volume.appendChild(plus);
+	var volLabel = document.createElement('label');
+	volLabel.textContent = Addon.ConfigData[volConfig].desc;
+	volume.appendChild(volLabel);
+	frag.appendChild(volume);
+	frag.appendChild(url('GCSoundURL'));
+	frag.appendChild(url('SeaSoundURL'));
+	frag.appendChild(listing('GCTimer'));
+	frag.appendChild(listing('Title'));
+	frag.appendChild(listing('Favicon'));
+	
+	frag.appendChild(header('Tooltip'));
+	frag.appendChild(listing('Tooltip'));
+	frag.appendChild(listing('TooltipAmor'));
+	frag.appendChild(listing('ToolWarnCaut'));
+	frag.appendChild(listing('ToolWarnCautPos'));
+	frag.appendChild(listing('ToolWrink'));
+	
+	frag.appendChild(header('Statistics'));
+	frag.appendChild(listing('Stats'));
+	frag.appendChild(listing('UpStats'));
+	frag.appendChild(listing('TimeFormat'));
+	frag.appendChild(listing('SayTime'));
+	
+	frag.appendChild(header('Other'));
+	frag.appendChild(listing('Scale'));	
+	var resDef = document.createElement('div');
+	resDef.className = 'listing';
+	var resDefBut = document.createElement('a');
+	resDefBut.className = 'option';
+	resDefBut.onclick = function() {Addon.RestoreDefault();};
+	resDefBut.textContent = 'Restore Default';
+	resDef.appendChild(resDefBut);
+	frag.appendChild(resDef);
+		
+	l('menu').childNodes[2].insertBefore(frag, l('menu').childNodes[2].childNodes[l('menu').childNodes[2].childNodes.length - 1]);
+		
+	Addon.Disp.FormatButtonOnClickBak = l('formatButton').onclick;
+	l('formatButton').onclick = function() {Game.Toggle('format', 'formatButton', 'Short numbers OFF', 'Short numbers ON', '1'); PlaySound('snd/tick.mp3'); Addon.Disp.RefreshScale();};
 }
 
 Addon.Disp.AddMenuStats = function()
@@ -1441,10 +2281,17 @@ Addon.Disp.UpdateWrinklerTooltip = function() {
 	}
 }
 
-Addon.Disp.UpdateAscendState = function()
-{
-	if (Game.OnAscend)
+Addon.Disp.UpdateAscendState = function() {
+	if (Game.OnAscend) {
 		l('game').style.bottom = '0px';
+		if (Addon.Config.BotBar == 1) Addon.Disp.BotBar.style.display = 'none';
+		if (Addon.Config.TimerBar == 1) Addon.Disp.TimerBar.style.display = 'none';
+	}
+	else {
+		Addon.Disp.ToggleBotBar();
+		Addon.Disp.ToggleTimerBar();
+	}
+
 	Addon.Disp.UpdateBackground();
 }
 
@@ -1457,11 +2304,14 @@ Addon.Disp.ToggleSayTime = function() {
 	}
 }
 
-Addon.Disp.RefreshScale = function()
-{
+Addon.Disp.RefreshScale = function() {
 	BeautifyAll();
 	Game.RefreshStore();
 	Game.RebuildUpgrades();
+
+	Addon.Disp.UpdateBotBarOther();
+	Addon.Disp.UpdateBuildings();
+	Addon.Disp.UpdateUpgrades();
 }
 
 Addon.Disp.colorTextPre = 'CMText';
@@ -1525,6 +2375,19 @@ Addon.ReplaceNative = function() {
 		Addon.Backup.tooltip.updateMod();
 		Addon.Disp.UpdateTooltipWarnCaut();
 		Addon.Disp.UpdateTooltipLocation();
+	}
+	
+	Addon.Backup.UpdateSpecial = Game.UpdateSpecial;
+	Game.UpdateSpecial = function() {
+		if (Addon.Config.TimerBar == 1 && Addon.Config.TimerBarPos == 0) {
+			var timerBarHeight = parseInt(Addon.Disp.TimerBar.style.height);
+			Game.mouseY -= timerBarHeight;
+			Addon.Backup.UpdateSpecial();
+			Game.mouseY += timerBarHeight;
+		}
+		else {
+			Addon.Backup.UpdateSpecial();
+		}
 	}
 	
 	Addon.Backup.RebuildUpgrades = Game.RebuildUpgrades;
@@ -1604,7 +2467,16 @@ Addon.Loop = function() {
 		
 		// Calculate PP
 		Addon.Cache.RemakePP();
+
+		// Update colors
+		Addon.Disp.UpdateBotBarOther();
+		Addon.Disp.UpdateBuildings();
+		Addon.Disp.UpdateUpgrades();
 		
+		// Redraw timers
+		Addon.Disp.UpdateBotBarTime();
+		Addon.Disp.UpdateTimerBar();
+	
 		// Update Tooltip
 		Addon.Disp.UpdateTooltip();
 
@@ -1615,6 +2487,9 @@ Addon.Loop = function() {
 		// Change menu refresh interval
 		Addon.Disp.RefreshMenu();
 	}
+	
+	// Check Golden Cookies
+	Addon.Disp.CheckGoldenCookie();
 	
 	// Check Season Popup
 	Addon.Disp.CheckSeasonPopup();
@@ -1644,6 +2519,12 @@ Addon.Init = function() {
 Addon.DelayInit = function() {
 	Addon.Sim.InitData();
 	Addon.Disp.CreateCssArea();
+	Addon.Disp.CreateBotBar();
+	Addon.Disp.CreateTimerBar();
+	Addon.Disp.CreateUpgradeBar();
+	Addon.Disp.CreateWhiteScreen();
+	Addon.Disp.CreateFavicon();
+	Addon.Disp.CreateGCTimer();
 	Addon.Disp.CreateTooltip('GoldCookTooltipPlaceholder', 'Calculated with Golden Switch off', '200px');
 	Addon.Disp.CreateTooltip('PrestMaxTooltipPlaceholder', 'The MAX prestige is calculated with the cookies gained from popping all wrinklers, selling all buildings with Earth Shatterer aura, and buying Chocolate egg', '310px');
 	Addon.Disp.CreateTooltip('NextPrestTooltipPlaceholder', 'Not calculated with cookies gained from wrinklers or Chocolate egg', '200px');
@@ -1666,6 +2547,8 @@ Addon.DelayInit = function() {
 
 	Game.Win('Third-party');
 }
+
+Addon.ConfigDefault = {BotBar: 1, TimerBar: 1, TimerBarPos: 0, BuildColor: 1, BulkBuildColor: 0, UpBarColor: 1, CalcWrink: 1, CPSMode: 1, AvgCPSHist: 2, AvgClicksHist: 2, ToolWarnCautBon: 0, Flash: 1, Sound: 1,  Volume: 100, GCSoundURL: 'http://freesound.org/data/previews/66/66717_931655-lq.mp3', SeaSoundURL: 'http://www.freesound.org/data/previews/121/121099_2193266-lq.mp3', GCTimer: 1, Title: 1, Favicon: 1, Tooltip: 1, TooltipAmor: 0, ToolWarnCaut: 1, ToolWarnCautPos: 1, ToolWrink: 1, Stats: 1, UpStats: 1, TimeFormat: 0, SayTime: 1, Scale: 2, StatsPref: {Lucky: 1, Chain: 1, Prestige: 1, Wrink: 1, Sea: 1, Misc: 1}, Colors : {Blue: '#4bb8f0', Green: '#00ff00', Yellow: '#ffff00', Orange: '#ff7f00', Red: '#ff0000', Purple: '#ff00ff', Gray: '#b3b3b3', Pink: '#ff1493', Brown: '#8b4513'}};
 Addon.ConfigPrefix = 'CMConfig';
 
 Addon.VersionMajor = '2.002';
