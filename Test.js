@@ -1441,17 +1441,10 @@ Addon.Disp.UpdateWrinklerTooltip = function() {
 	}
 }
 
-Addon.Disp.UpdateAscendState = function() {
-	if (Game.OnAscend) {
+Addon.Disp.UpdateAscendState = function()
+{
+	if (Game.OnAscend)
 		l('game').style.bottom = '0px';
-		if (Addon.Config.BotBar == 1) Addon.Disp.BotBar.style.display = 'none';
-		if (Addon.Config.TimerBar == 1) Addon.Disp.TimerBar.style.display = 'none';
-	}
-	else {
-		Addon.Disp.ToggleBotBar();
-		Addon.Disp.ToggleTimerBar();
-	}
-
 	Addon.Disp.UpdateBackground();
 }
 
@@ -1464,14 +1457,11 @@ Addon.Disp.ToggleSayTime = function() {
 	}
 }
 
-Addon.Disp.RefreshScale = function() {
+Addon.Disp.RefreshScale = function()
+{
 	BeautifyAll();
 	Game.RefreshStore();
 	Game.RebuildUpgrades();
-
-	Addon.Disp.UpdateBotBarOther();
-	Addon.Disp.UpdateBuildings();
-	Addon.Disp.UpdateUpgrades();
 }
 
 Addon.Disp.colorTextPre = 'CMText';
@@ -1627,16 +1617,7 @@ Addon.Loop = function() {
 		
 		// Calculate PP
 		Addon.Cache.RemakePP();
-
-		// Update colors
-		Addon.Disp.UpdateBotBarOther();
-		Addon.Disp.UpdateBuildings();
-		Addon.Disp.UpdateUpgrades();
 		
-		// Redraw timers
-		Addon.Disp.UpdateBotBarTime();
-		Addon.Disp.UpdateTimerBar();
-	
 		// Update Tooltip
 		Addon.Disp.UpdateTooltip();
 
@@ -1679,12 +1660,6 @@ Addon.Init = function() {
 Addon.DelayInit = function() {
 	Addon.Sim.InitData();
 	Addon.Disp.CreateCssArea();
-	Addon.Disp.CreateBotBar();
-	Addon.Disp.CreateTimerBar();
-	Addon.Disp.CreateUpgradeBar();
-	Addon.Disp.CreateWhiteScreen();
-	Addon.Disp.CreateFavicon();
-	Addon.Disp.CreateGCTimer();
 	Addon.Disp.CreateTooltip('GoldCookTooltipPlaceholder', 'Calculated with Golden Switch off', '200px');
 	Addon.Disp.CreateTooltip('PrestMaxTooltipPlaceholder', 'The MAX prestige is calculated with the cookies gained from popping all wrinklers, selling all buildings with Earth Shatterer aura, and buying Chocolate egg', '310px');
 	Addon.Disp.CreateTooltip('NextPrestTooltipPlaceholder', 'Not calculated with cookies gained from wrinklers or Chocolate egg', '200px');
@@ -1707,8 +1682,6 @@ Addon.DelayInit = function() {
 
 	Game.Win('Third-party');
 }
-
-Addon.ConfigDefault = {BotBar: 1, TimerBar: 1, TimerBarPos: 0, BuildColor: 1, BulkBuildColor: 0, UpBarColor: 1, CalcWrink: 1, CPSMode: 1, AvgCPSHist: 2, AvgClicksHist: 2, ToolWarnCautBon: 0, Flash: 1, Sound: 1,  Volume: 100, GCSoundURL: 'http://freesound.org/data/previews/66/66717_931655-lq.mp3', SeaSoundURL: 'http://www.freesound.org/data/previews/121/121099_2193266-lq.mp3', GCTimer: 1, Title: 1, Favicon: 1, Tooltip: 1, TooltipAmor: 0, ToolWarnCaut: 1, ToolWarnCautPos: 1, ToolWrink: 1, Stats: 1, UpStats: 1, TimeFormat: 0, SayTime: 1, Scale: 2, StatsPref: {Lucky: 1, Chain: 1, Prestige: 1, Wrink: 1, Sea: 1, Misc: 1}, Colors : {Blue: '#4bb8f0', Green: '#00ff00', Yellow: '#ffff00', Orange: '#ff7f00', Red: '#ff0000', Purple: '#ff00ff', Gray: '#b3b3b3', Pink: '#ff1493', Brown: '#8b4513'}};
 Addon.ConfigPrefix = 'CMConfig';
 
 Addon.VersionMajor = '2.002';
