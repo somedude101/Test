@@ -22,6 +22,13 @@ Addon.Sim = {};
  * Cache *
  *********/
 
+Addon.Cache.AddQueue = function() {
+	Addon.Cache.Queue = document.createElement('script');
+	Addon.Cache.Queue.type = 'text/javascript';
+	Addon.Cache.Queue.setAttribute('src', 'http://aktanusa.github.io/CookieMonster/queue/queue.js');
+	document.head.appendChild(Addon.Cache.Queue);
+}
+
 Addon.Cache.NextNumber = function(base) {
 	var count = base > Math.pow(2, 53) ? Math.pow(2, Math.floor(Math.log(base) / Math.log(2)) - 53) : 1;
 	while (base == base + count) {
