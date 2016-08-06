@@ -20,6 +20,20 @@ Addon.Init = function()
 {
 	Addon.AddQueue();
 	Addon.AddJscolor();
+	var delay = setInterval(function()
+	{
+		Addon.DelayInit();
+		clearInterval(delay);
+	}, 500);
+}
+
+Addon.DelayInit = function()
+{
+	if (Game.prefs.popups)
+		Game.Popup('Addon loaded!');
+	else
+		Game.Notify('Addon loaded!', '', '', 1, 1);
+	Game.Win('Third-party');
 }
 
 Addon.colorTextPre = 'CMText';
