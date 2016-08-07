@@ -4,7 +4,7 @@ Addon.CCPrefs = Game.DefaultPrefs;
 Game.DefaultPrefs=function()
 {
 	Addon.CCPrefs();
-	Game.prefs.statistics = 0;
+	Game.prefs.foc = 0;
 }
 
 Addon.AddMenu = function()
