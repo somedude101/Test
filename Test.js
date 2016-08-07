@@ -7,6 +7,7 @@ Addon.AddMenu = function()
 	{
 		str += '<div class="subsection">'+
 		'<div class="title">Addon</div>'+
+		'<div style="padding-bottom:128px;"></div>'
 	}
 	l('menu').innerHTML=str;
 }
