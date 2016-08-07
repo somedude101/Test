@@ -36,8 +36,7 @@ Addon.AddMenu = function()
 		Game.WriteButton('notifs','notifsButton','Fast notes ON','Fast notes OFF')+'<label>(notifications disappear much faster)</label><br>'+
 		Game.WriteButton('autoupdate','autoupdateButton','Offline mode OFF','Offline mode ON',0,1)+'<label>(disables update notifications)</label><br>'+
 		Game.WriteButton('warn','warnButton','Closing warning ON','Closing warning OFF')+'<label>(the game will ask you to confirm when you close the window)</label><br>'+
-		Game.WriteButton('focus','focusButton','Defocus OFF','Defocus ON',0,1)+'<label>(the game will be less resource-intensive when out of focus)</label><br>'+
-		Game.WriteButton('statistics','statisticsButton','Statistics ON','Statistics OFF', 1, 0)+'<label>(stats on the next purchase)</label><br>'+
+		Game.WriteButton('focus','focButton','Defocus OFF','Defocus ON',0,1)+'<label>(the game will be less resource-intensive when out of focus)</label><br>'+
 		'</div>'+
 		'<div style="padding-bottom:128px;"></div>'+
 		'</div>';
