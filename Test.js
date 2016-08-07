@@ -1,1 +1,3 @@
-<div id="logButton" class="button">Addon</div>
+$('#logButton').before(
+  $('<div id="logButton" />').addClass('button').html('Addon')
+);
