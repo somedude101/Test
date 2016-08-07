@@ -5,7 +5,8 @@ Addon.AddMenu = function()
 	var str = '';
 	if (Game.onMenu == 'prefs')
 	{
-		str += '<div class="title">Addon</div>'
+		str += '<div class="subsection">'+
+		'<div class="title">Addon</div>'
 	}
 	l('menu').innerHTML += str;
 }
