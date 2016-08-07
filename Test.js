@@ -2,14 +2,14 @@ Addon = {};
 
 Addon.AddMenu = function()
 {
-	var str = '';
+	var str2 = '';
 	if (Game.onMenu == 'prefs')
 	{
-		str += '<div class="subsection">'+
+		str2 += '<div class="subsection">'+
 		'<div class="title">Addon</div>'+
 		'<div style="padding-bottom:128px;"></div>'
 	}
-	l('menu').innerHTML=str;
+	l('menu').innerHTML = str2;
 }
 Addon.CCMenu = Game.UpdateMenu;
 Game.UpdateMenu = function()
