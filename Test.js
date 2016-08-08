@@ -52,7 +52,10 @@ Addon.AddMenu = function()
 		if(Game.prefs.statistics == 1)
 		{
 			str += '<div class="subsection">'+
-		'<div class="title">Efficiency</div>'
+			'<div class="title">Efficiency</div>'+
+			'<div class="listing"><b>Name	Price	CPS	Time	Effi.</div>';
+			for(var i in Addon.Purchases)
+				str += '<div class="listing"><b>'Addon.Purchase.name'	'Addon.Purchase.price'	'Addon.Purchase.cpsBoost'	'Addon.Purchase.time'	'Addon.Purchase.Efficiency'</div>';
 		}
 		var buildingsOwned=0;
 		buildingsOwned=Game.BuildingsOwned;
@@ -253,5 +256,24 @@ Game.UpdateMenu = function()
 	Addon.CCMenu();
 	Addon.AddMenu();
 }
-Game.win('Third-party');
-Addon.CalculateEfficiency('');
+Game.Win('Third-party');
+Addon.Purchase = function(name, price, cpsBoost, time, efficiency)
+{
+	this.name = name;
+	this.price = price;
+	this.cpsBoost = cpsBoost;
+	this.time = time;
+	this.efficiency = efficiency;
+}
+Addon.CalculateEfficiency = function()
+{
+	for(var i in Game.Objects)
+	{
+		var name = Game.Objects[i].name;
+		var price = Game.Objects[i].price;
+		var cpsBoost = Game.Objects[i].cps;
+		var time = (Game.cookies < price)? ((price - Game.cookies)/Game.cookiesPs) : 0;
+		var efficiency = time + (price/cpsBoost);
+		Addon.Purchase(name, price, cpsBoost, time, efficiency);
+	}
+}
