@@ -48,12 +48,13 @@ Addon.AddMenu = function()
 	}
 	else if(Game.onMenu == 'stats')
 	{
+		Addon.CalculateEfficiency();
 		str += '<div class="section">Statistics</div>'
 		if(Game.prefs.statistics == 1)
 		{
 			str += '<div class="subsection">'+
 			'<div class="title">Efficiency</div>'+
-			'<div class="listing"><b>Name	Price	CPS	Time	Effi.</div>';
+			'<div class="listing"><b>Name		Price		CPS		Time		Effi.</div>';
 			for(var i in Addon.Purchase)
 				str += '<div class="listing"><b>' + Addon.Purchase[i].name + '</div>';
 		}
