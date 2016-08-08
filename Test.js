@@ -40,7 +40,7 @@ Addon.AddMenu = function()
 		'</div>'+
 		'<div class="title">Addon</div>'+
 		'<div class="listing">'+
-		Game.WriteButton('statistics','statisticsButton','Statistics ON','Statistics OFF',0,1)+'<label>(stats on the next purchase)</label><br>'+
+		Game.WriteButton('statistics','statisticsButton','Statistics ON','Statistics OFF')+'<label>(stats on the next purchase)</label><br>'+
 		'</div>'+
 		'<div style="padding-bottom:128px;"></div>'+
 		'</div>';
