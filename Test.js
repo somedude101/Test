@@ -55,7 +55,7 @@ Addon.AddMenu = function()
 			'<div class="title">Efficiency</div>'+
 			'<div class="listing"><b>Name	Price	CPS	Time	Effi.</div>';
 			for(var i in Addon.Purchases)
-				str += '<div class="listing"><b>'Addon.Purchase.name'	'Addon.Purchase.price'	'Addon.Purchase.cpsBoost'	'Addon.Purchase.time'	'Addon.Purchase.Efficiency'</div>';
+				str += '<div class="listing"><b>' + Addon.Purchase.name + '	' + Addon.Purchase.price + '	' + Addon.Purchase.cpsBoost + '	'Addon.Purchase.time + '	' + Addon.Purchase.Efficiency + '</div>';
 		}
 		var buildingsOwned=0;
 		buildingsOwned=Game.BuildingsOwned;
