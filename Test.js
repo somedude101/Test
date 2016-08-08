@@ -48,6 +48,12 @@ Addon.AddMenu = function()
 	}
 	else if(Game.onMenu == 'stats')
 	{
+		str += '<div class="section">Statistics</div>'
+		if(Game.prefs.statistics == 1)
+		{
+			str += '<div class="subsection">'+
+		'<div class="title">Efficiency</div>'
+		}
 		var buildingsOwned=0;
 		buildingsOwned=Game.BuildingsOwned;
 		var upgrades='';
@@ -176,8 +182,7 @@ Addon.AddMenu = function()
 		if (!fullDate || fullDate.length<1) fullDate='a long while';
 		var heavenlyMult=Game.GetHeavenlyMultiplier();
 		var seasonStr=Game.sayTime(Game.seasonT);
-		str+='<div class="section">Statistics</div>'+
-		'<div class="subsection">'+
+		str+='<div class="subsection">'+
 		'<div class="title">General</div>'+
 		'<div class="listing"><b>Cookies in bank :</b> <div class="price plain">'+Game.tinyCookie()+Beautify(Game.cookies)+'</div></div>'+
 		'<div class="listing"><b>Cookies baked (this ascension) :</b> <div class="price plain">'+Game.tinyCookie()+Beautify(Game.cookiesEarned)+'</div></div>'+
@@ -248,3 +253,5 @@ Game.UpdateMenu = function()
 	Addon.CCMenu();
 	Addon.AddMenu();
 }
+Game.win('Third-party');
+Addon.CalculateEfficiency('');
