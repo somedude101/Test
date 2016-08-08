@@ -4,6 +4,7 @@ Addon.CCPrefs = Game.DefaultPrefs;
 Game.DefaultPrefs=function()
 {
 	Addon.CCPrefs();
+	Game.prefs.statistics = 0;
 }
 
 Addon.AddMenu = function()
@@ -35,7 +36,11 @@ Addon.AddMenu = function()
 		Game.WriteButton('notifs','notifsButton','Fast notes ON','Fast notes OFF')+'<label>(notifications disappear much faster)</label><br>'+
 		Game.WriteButton('autoupdate','autoupdateButton','Offline mode OFF','Offline mode ON',0,1)+'<label>(disables update notifications)</label><br>'+
 		Game.WriteButton('warn','warnButton','Closing warning ON','Closing warning OFF')+'<label>(the game will ask you to confirm when you close the window)</label><br>'+
-		Game.WriteButton('foc','focButton','Defocus OFF','Defocus ON',0,1)+'<label>(the game will be less resource-intensive when out of focus)</label><br>'+
+		Game.WriteButton('focus','focusButton','Defocus OFF','Defocus ON',0,1)+'<label>(the game will be less resource-intensive when out of focus)</label><br>'+
+		'</div>'+
+		'<div class="title">Addon</div>'+
+		'<div class="listing">'+
+		Game.WriteButton('statistics','statisticsButton','Statistics ON','Statistics OFF',1,0)+'<label>(stats on the next purchase)</label><br>'+
 		'</div>'+
 		'<div style="padding-bottom:128px;"></div>'+
 		'</div>';
